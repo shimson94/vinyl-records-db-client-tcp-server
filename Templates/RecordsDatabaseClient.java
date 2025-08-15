@@ -5,7 +5,7 @@
  * A naive JavaFX for connecting to the database server and interact
  * with the database.
  *
- * author: <YOUR STUDENT ID HERE>
+ * author: <2456077>
  *
  */
 
@@ -57,10 +57,10 @@ public class RecordsDatabaseClient extends Application {
 
 	public static RecordsDatabaseClient me; //Get the application instance in javafx
 	public static Stage thePrimaryStage;  //Get the application primary scene in javafx
-    private Socket clientSocket = null;
+	private Socket clientSocket = null;
 
-    private String userCommand = null; //The user command
-    private CachedRowSet serviceOutcome = null; //The service outcome
+	private String userCommand = null; //The user command
+	private CachedRowSet serviceOutcome = null; //The service outcome
 
 
 	//Convenient to populate the TableView
@@ -70,7 +70,7 @@ public class RecordsDatabaseClient extends Application {
 		private StringProperty genre;
 		private StringProperty rrp;
 		private StringProperty copyID;
-		
+
 		public void setTitle(String value) { titleProperty().set(value); }
 		public String getTitle() { return titleProperty().get(); }
 		public void setLabel(String value) { labelProperty().set(value); }
@@ -83,161 +83,179 @@ public class RecordsDatabaseClient extends Application {
 		public String getCopyID() { return copyIDProperty().get(); }
 
 
-		public StringProperty titleProperty() { 
+		public StringProperty titleProperty() {
 			if (title == null)
 				title = new SimpleStringProperty(this, "");
-			return title; 
+			return title;
 		}
-		public StringProperty labelProperty() { 
+		public StringProperty labelProperty() {
 			if (label == null)
 				label = new SimpleStringProperty(this, "");
-			return label; 
+			return label;
 		}
-		public StringProperty genreProperty() { 
+		public StringProperty genreProperty() {
 			if (genre == null)
 				genre = new SimpleStringProperty(this, "");
-			return genre; 
+			return genre;
 		}
-		public StringProperty rrpProperty() { 
+		public StringProperty rrpProperty() {
 			if (rrp == null)
 				rrp = new SimpleStringProperty(this, "");
-			return rrp; 
+			return rrp;
 		}
-		public StringProperty copyIDProperty() { 
+		public StringProperty copyIDProperty() {
 			if (copyID == null)
 				copyID = new SimpleStringProperty(this, "");
-			return copyID; 
+			return copyID;
 		}
-				
+
 	}
 
+	//Class Constructor
+	public RecordsDatabaseClient(){
 
-
-
-
-    //Class Constructor
-    public RecordsDatabaseClient(){
-		
 		me=this;
-    }
+	}
 
 
 	//Initializes the client socket using the credentials from class Credentials.
 	public void initializeSocket(){
-        
-		//TO BE COMPLETED
-			
+		try {
+			clientSocket = new Socket(Credentials.HOST, Credentials.PORT);
+			System.out.println("Client: Connected to server at " + Credentials.HOST + " on port " + Credentials.PORT);
+		} catch (UnknownHostException e) {
+			System.out.println("Client Error: Host " + Credentials.HOST + " could not be found: " + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("Client Error: Couldn't get I/O for the connection to " + Credentials.HOST + ": " + e.getMessage());
+		}
 	}
 
+	public void requestService() {
+		try {
+			System.out.println("Client: Requesting records database service for user command\n" + this.userCommand +"\n");
+			String commandToSend = userCommand + "#";
 
-    public void requestService() {
-        try {
-            System.out.println("Client: Requesting records database service for user command\n" + this.userCommand +"\n");
+			OutputStream outputStream = clientSocket.getOutputStream();
+			outputStream.write(commandToSend.getBytes());
+			outputStream.flush();
 
-            //TO BE COMPLETED
+			System.out.println("Client: Command sent to the server.");
 
-        }catch(IOException e){
-            System.out.println("Client: I/O error. " + e);
-        }
-    }
-	
+		}catch(IOException e){
+			System.out.println("Client: I/O error. " + e);
+		}
+	}
 
-
-    public void reportServiceOutcome() {
-        try {
-
-            //TO BE COMPLETED
+	public void reportServiceOutcome() {
+		try {
+			ObjectInputStream outcomeStreamReader = new ObjectInputStream(clientSocket.getInputStream());
+			serviceOutcome = (CachedRowSet) outcomeStreamReader.readObject();
+			ObservableList<MyTableRecord> tmpRecords = FXCollections.observableArrayList();
+			TableView<MyTableRecord> outputBox = new TableView<>();
 			String tmp = "";
-			System.out.println(tmp +"\n====================================\n");
-        }catch(IOException e){
-            System.out.println("Client: I/O error. " + e);
-        }catch(ClassNotFoundException e){
-            System.out.println("Client: Unable to cast read object to CachedRowSet. " + e);
-        }catch(SQLException e){
-            System.out.println("Client: Can't retrieve requested attribute from result set. " + e);
-        }
-    }
+			while (serviceOutcome.next()) {
+				MyTableRecord record = new MyTableRecord();
+				record.setTitle(serviceOutcome.getString("title"));
+				record.setLabel(serviceOutcome.getString("label"));
+				record.setGenre(serviceOutcome.getString("genre"));
+				record.setRrp(serviceOutcome.getString("rrp"));
+				record.setCopyID(serviceOutcome.getString("num_copies"));
 
-    //Execute client
-    public void execute(){
- 		GridPane grid = (GridPane) thePrimaryStage.getScene().getRoot();
+				tmpRecords.add(record);
+			}
+			GridPane rootGrid = (GridPane) thePrimaryStage.getScene().getRoot();
+			ObservableList<Node> nodes = rootGrid.getChildren();
+			for (Node n : nodes){
+				if (n instanceof TableView){
+					outputBox = (TableView<MyTableRecord>) n;
+					break;
+				}
+			}
+			if (outputBox != null){
+				outputBox.setItems(tmpRecords);
+			}
+			System.out.println(tmp +"\n====================================\n");
+		}catch(IOException e){
+			System.out.println("Client: I/O error. " + e);
+		}catch(ClassNotFoundException e){
+			System.out.println("Client: Unable to cast read object to CachedRowSet. " + e);
+		}catch(SQLException e){
+			System.out.println("Client: Can't retrieve requested attribute from result set. " + e);
+		}
+	}
+
+	//Execute client
+	public void execute(){
+		GridPane grid = (GridPane) thePrimaryStage.getScene().getRoot();
 		ObservableList<Node> childrens = grid.getChildren();
 		TextField artistInputBox = (TextField) childrens.get(1);
 		TextField recordshopInputBox = (TextField) childrens.get(3);
-		
-		//Build user message command
 
-		//TO BE COMPLETED
+		String artistSurname = artistInputBox.getText();
+		String recordShopCity = recordshopInputBox.getText();
+		userCommand = artistSurname + ";" + recordShopCity;
 
-        //Request service
-        try{
-
-			//Initializes the socket
+		try{
 			this.initializeSocket();
+			this.requestService();
+			this.reportServiceOutcome();
 
-            //Request service
-            this.requestService();
+			if (this.clientSocket != null && !this.clientSocket.isClosed()) {
+				this.clientSocket.close();
+				System.out.println("Client: Connection closed successfully.");
+			}
 
-            //Report user outcome of service
-            this.reportServiceOutcome();
+		}catch(Exception e)
+		{
+			System.out.println("Client: Exception " + e);
+		}
+	}
 
-            //Close the connection with the server
-            this.clientSocket.close();
+	@Override
+	public void start(Stage primaryStage) {
+		primaryStage.setTitle("Records Database Client");
 
-        }catch(Exception e)
-        {// Raised if connection is refused or other technical issue
-            System.out.println("Client: Exception " + e);
-        }
-    }
-
-
-
-
-    @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Records Database Client");
-		
 		//Create a GridPane container
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(10, 10, 10, 10));
 		grid.setVgap(5);
 		grid.setHgap(5);
 
-		
+
 		//Add the input boxes
 		Label artistLabel = new Label("Artist's Surname:");
 		GridPane.setConstraints(artistLabel, 0, 0);
-		grid.getChildren().add(artistLabel);		
-		
+		grid.getChildren().add(artistLabel);
+
 		TextField artistInputBox = new TextField ();
 		artistInputBox.setPromptText("Artist's Surname:");
 		artistInputBox.setPrefColumnCount(30);
 		GridPane.setConstraints(artistInputBox, 1, 0);
-		grid.getChildren().add(artistInputBox);		
-		
+		grid.getChildren().add(artistInputBox);
+
 		Label recordshopLabel = new Label("Record shop's city:");
 		GridPane.setConstraints(recordshopLabel, 0, 1);
 		grid.getChildren().add(recordshopLabel);
-		
+
 		TextField recordshopInputBox = new TextField ();
 		recordshopInputBox.setPromptText("Record shop's city:");
 		recordshopInputBox.setPrefColumnCount(30);
 		GridPane.setConstraints(recordshopInputBox, 1, 1);
 		grid.getChildren().add(recordshopInputBox);
-		
+
 		//Add the service request button
-        Button btn = new Button();
-        btn.setText("Request Records Database Service");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
- 
-            @Override
-            public void handle(ActionEvent event) {
+		Button btn = new Button();
+		btn.setText("Request Records Database Service");
+		btn.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
 				me.execute();
-            }
-        });        
+			}
+		});
 		GridPane.setConstraints(btn, 0, 2, 2, 1);
 		grid.getChildren().add(btn);
-		
+
 		//Add the output box
 		TableView<MyTableRecord> outputBox = new TableView<MyTableRecord>();
 		TableColumn<MyTableRecord,String> titleCol     = new TableColumn<MyTableRecord,String>("Title");
@@ -254,33 +272,27 @@ public class RecordsDatabaseClient extends Application {
 
 		@SuppressWarnings("unchecked") ObservableList<TableColumn<MyTableRecord,?>> tmp = outputBox.getColumns();
 		tmp.addAll(titleCol, labelCol, genreCol, rrpCol, copyIDCol);
-			//Leaving this type unchecked by now... It may be convenient to compile with -Xlint:unchecked for details.
+		//Leaving this type unchecked by now... It may be convenient to compile with -Xlint:unchecked for details.
 
 		GridPane.setConstraints(outputBox, 0, 3, 2, 1);
-		grid.getChildren().add(outputBox);		
+		grid.getChildren().add(outputBox);
 
 		//Adjust gridPane's columns width
 		ColumnConstraints col1 = new ColumnConstraints();
 		col1.setPercentWidth(25);
-	    ColumnConstraints col2 = new ColumnConstraints();
+		ColumnConstraints col2 = new ColumnConstraints();
 		col2.setPercentWidth(75);
-	    grid.getColumnConstraints().addAll( col1, col2);
+		grid.getColumnConstraints().addAll( col1, col2);
 
-        primaryStage.setScene(new Scene(grid, 505, 505));
-        primaryStage.show();
-		
-		
+		primaryStage.setScene(new Scene(grid, 505, 505));
+		primaryStage.show();
+
 		thePrimaryStage = primaryStage;
+	}
 
-		
-    }
-
-
-
-
-    public static void main (String[] args) {
+	public static void main (String[] args) {
 		launch(args);
-        System.out.println("Client: Finished.");
-        System.exit(0);
-    }
+		System.out.println("Client: Finished.");
+		System.exit(0);
+	}
 }
