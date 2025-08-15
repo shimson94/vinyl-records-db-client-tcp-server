@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run Server",
+            "request": "launch",
+            "mainClass": "RecordsDatabaseServer",
+            "projectName": "vinyl-records-db-client-tcp-server"
+        },
+        {
+            "type": "java",
+            "name": "Run Client",
+            "request": "launch",
+            "mainClass": "RecordsDatabaseClient",
+            "projectName": "vinyl-records-db-client-tcp-server",
+            "vmArgs": "--module-path \"${env:PATH_TO_FX}\" --add-modules javafx.controls,javafx.fxml"
+        }
+    ]
+}
