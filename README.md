@@ -29,7 +29,7 @@ This application demonstrates enterprise-level software architecture by implemen
 
 ```
 ┌───────────────────┐    TCP/IP     ┌───────────────────┐    JDBC     ┌───────────────────┐
-│   JavaFX Client   │◄─────────────►│ Multi-threaded    │◄───────────►│  PostgreSQL DB   │
+│   JavaFX Client   │◄─────────────►│ Multi-threaded    │◄───────────►│  PostgreSQL DB    │
 │                   │   Socket      │   Java Server     │ Connection  │                   │
 │ • Search GUI      │ Communication │ • Thread Pool     │    Pool     │ • Artist Table    │
 │ • Results Table   │               │ • Request Handler │             │ • Record Table    │
@@ -239,7 +239,7 @@ src/
 ├── RecordsDatabaseClient.java    # JavaFX client application
 └── Credentials.java              # Database/server credentials (optional)
 ```
-
+- See [PROJECT_STRUCTURE.md](https://github.com/shimson94/vinyl-records-db-client-tcp-server/blob/main/PROJECT_STRUCTURE.md) file for more details
 ---
 
 ## 📚 Future Improvements
@@ -262,4 +262,3 @@ MIT License — see LICENSE file.
 - Tested with PostgreSQL 14+ and `postgresql-42.6.0.jar`
 - Compatible with IntelliJ IDEA and VS Code
 - Command-line compilation and execution supported
-- GitHub repository: https://github.com/shimson94/vinyl-records-db-client-tcp-server
