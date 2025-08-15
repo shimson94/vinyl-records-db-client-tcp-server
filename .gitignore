@@ -45,6 +45,14 @@ build/
 # IDE Files
 ## IntelliJ IDEA
 .idea/
+!.idea/runConfigurations/
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
+!.idea/compiler.xml
+!.idea/encodings.xml
+!.idea/misc.xml
+!.idea/modules.xml
+!.idea/vcs.xml
 *.iws
 *.iml
 *.ipr
