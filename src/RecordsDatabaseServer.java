@@ -10,21 +10,12 @@
 
 import java.net.Socket;
 import java.net.ServerSocket;
-// import java.net.InetAddress;
-
-
-
 public class RecordsDatabaseServer {
 
     private int thePort = 0;
     private String theIPAddress = null;
     private ServerSocket serverSocket =  null;
 
-    //Support for closing the server
-    //private boolean keypressedFlag = false;
-
-
-    //Class constructor
     public RecordsDatabaseServer(){
         thePort = Credentials.PORT;
         theIPAddress = Credentials.HOST;
@@ -34,28 +25,20 @@ public class RecordsDatabaseServer {
         try {
             serverSocket = new ServerSocket(thePort);
             System.out.println("Server: Server at " + theIPAddress + " is listening on port : " + thePort);
-            while (true){
-                System.out.println("Server: Waiting for client connection...");
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Server: Connection established with " + clientSocket.getInetAddress());
-
-                Thread clientHandlerThread = new Thread(new RecordsDatabaseService(clientSocket));
-                clientHandlerThread.start();
-            }
         } catch (Exception e){
             System.out.println(e);
             System.exit(1);
         }
     }
 
-    //Runs the service loop
     public void executeServiceLoop()
     {
         System.out.println("Server: Start service loop.");
         try {
             while (true) {
+                System.out.println("Server: Waiting for client connection...");
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Server: Client connected from " + clientSocket.getInetAddress());
+                System.out.println("Server: Connection established with " + clientSocket.getInetAddress());
                 Thread serviceThread = new Thread(new RecordsDatabaseService(clientSocket));
                 serviceThread.start();
             }

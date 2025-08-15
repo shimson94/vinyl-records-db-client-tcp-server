@@ -4,33 +4,18 @@
  * A client for accessing the records database
  * A naive JavaFX for connecting to the database server and interact
  * with the database.
- *
- * author: <2456077>
- *
+ * 
  */
 
-
-// import java.util.List;
-// import java.util.ArrayList;
 import java.util.Arrays;
-
 import java.lang.ClassNotFoundException;
-// import java.lang.IndexOutOfBoundsException;
-
 import java.net.Socket;
 import java.net.UnknownHostException;
-
-// import java.io.InputStream;
 import java.io.OutputStream;
-// import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-
 import java.sql.*;
-
 import javax.sql.rowset.CachedRowSet;
-
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -39,7 +24,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-// import javafx.scene.control.TextArea;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -112,9 +96,7 @@ public class RecordsDatabaseClient extends Application {
 
 	}
 
-	//Class Constructor
 	public RecordsDatabaseClient(){
-
 		me=this;
 	}
 
@@ -186,7 +168,6 @@ public class RecordsDatabaseClient extends Application {
 		}
 	}
 
-	//Execute client
 	public void execute(){
 		GridPane grid = (GridPane) thePrimaryStage.getScene().getRoot();
 		ObservableList<Node> childrens = grid.getChildren();
@@ -258,13 +239,13 @@ public class RecordsDatabaseClient extends Application {
 		GridPane.setConstraints(btn, 0, 2, 2, 1);
 		grid.getChildren().add(btn);
 
-		//Add the output box
+		// Output box
 		TableView<MyTableRecord> outputBox = new TableView<MyTableRecord>();
-		TableColumn<MyTableRecord,String> titleCol     = new TableColumn<MyTableRecord,String>("Title");
+		TableColumn<MyTableRecord,String> titleCol = new TableColumn<MyTableRecord,String>("Title");
 		TableColumn<MyTableRecord,String> labelCol = new TableColumn<MyTableRecord,String>("Label");
-		TableColumn<MyTableRecord,String> genreCol     = new TableColumn<MyTableRecord,String>("Genre");
-		TableColumn<MyTableRecord,String> rrpCol       = new TableColumn<MyTableRecord,String>("RRP");
-		TableColumn<MyTableRecord,String> copyIDCol    = new TableColumn<MyTableRecord,String>("Num. Copies");
+		TableColumn<MyTableRecord,String> genreCol = new TableColumn<MyTableRecord,String>("Genre");
+		TableColumn<MyTableRecord,String> rrpCol = new TableColumn<MyTableRecord,String>("RRP");
+		TableColumn<MyTableRecord,String> copyIDCol = new TableColumn<MyTableRecord,String>("Num. Copies");
 		titleCol.setCellValueFactory(new PropertyValueFactory<MyTableRecord,String>("title"));
         labelCol.setCellValueFactory(new PropertyValueFactory<MyTableRecord,String>("label"));
         genreCol.setCellValueFactory(new PropertyValueFactory<MyTableRecord,String>("genre"));

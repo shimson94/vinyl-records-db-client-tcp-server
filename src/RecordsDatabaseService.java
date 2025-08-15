@@ -11,23 +11,11 @@
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-// import java.io.OutputStream;
-// import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-
 import java.net.Socket;
-
-// import java.util.StringTokenizer;
-
 import java.sql.*;
 import javax.sql.rowset.*;
-
-//Direct import of the classes CachedRowSet and CachedRowSetImpl will fail because
-//these classes are not exported by the module. Instead, one needs to import
-//javax.sql.rowset.* as above.
-
-
 public class RecordsDatabaseService extends Thread {
 
     private Socket serviceSocket = null;
@@ -79,41 +67,48 @@ public class RecordsDatabaseService extends Thread {
 
     //Parse the request command and execute the query
     public boolean attendRequest() {
-        boolean flagRequestAttended = true;
+    boolean flagRequestAttended = true;
+    this.outcome = null;
+    String artistLastName = requestStr[0];
+    String recordShopCity = requestStr[1];
 
-        this.outcome = null;
-        String artistLastName = requestStr[0];
-        String recordShopCity = requestStr[1];
+    String sql = "SELECT record.title, record.label, record.genre, record.rrp, COUNT(recordcopy.recordID) AS num_copies " +
+            "FROM record " +
+            "INNER JOIN artist ON artist.artistID = record.artistID " +
+            "INNER JOIN recordcopy ON recordcopy.recordID = record.recordID " +
+            "INNER JOIN recordshop ON recordshop.recordshopID = recordcopy.recordshopID " +
+            "WHERE artist.lastname = ? AND recordshop.city = ? " +
+            "GROUP BY record.title, record.label, record.genre, record.rrp " +
+            "HAVING COUNT(recordcopy.recordID) > 0";  
 
+    try {
+        Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        
+        // Set parameters safely (prevents SQL injection)
+        stmt.setString(1, artistLastName);
+        stmt.setString(2, recordShopCity);
+        
+        ResultSet rs = stmt.executeQuery();
 
-        String sql = "SELECT record.title, record.label, record.genre, record.rrp, COUNT(recordcopy.recordID) AS num_copies " +
-                "FROM record " +
-                "INNER JOIN artist ON artist.artistID = record.artistID " +
-                "INNER JOIN recordcopy ON recordcopy.recordID = record.recordID " +
-                "INNER JOIN recordshop ON recordshop.recordshopID = recordcopy.recordshopID " +
-                "WHERE artist.lastname = '" + artistLastName + "' AND recordshop.city = '" + recordShopCity + "' " +
-                "GROUP BY record.title, record.label, record.genre, record.rrp;";
+        RowSetFactory aFactory = RowSetProvider.newFactory();
+        CachedRowSet crs = aFactory.createCachedRowSet();
+        crs.populate(rs);
+        this.outcome = crs;
 
+        rs.close();
+        stmt.close();
+        conn.close();
 
+        System.out.println("Service: Query executed successfully for artist=" + artistLastName + ", city=" + recordShopCity);
 
-        try {
-            Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
-
-            RowSetFactory aFactory = RowSetProvider.newFactory();
-            CachedRowSet crs = aFactory.createCachedRowSet();
-            crs.populate(rs);
-            this.outcome = crs;
-
-            rs.close();
-
-        } catch (SQLException e) {
-            System.out.println("Database or SQL exception: " + e.getMessage());
-            flagRequestAttended = false;
-        }
-        return flagRequestAttended;
+    } catch (SQLException e) {
+        System.out.println("Database or SQL exception: " + e.getMessage());
+        e.printStackTrace();
+        flagRequestAttended = false;
     }
+    return flagRequestAttended;
+}
 
     //Wrap and return service outcome
     public void returnServiceOutcome() {
