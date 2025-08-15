@@ -1,44 +1,51 @@
 # 🎵 Vinyl Record Query System
 
-A **3-tier TCP-based multi-threaded client-server application** built in Java, featuring a **JavaFX client** and a **PostgreSQL-backed JDBC service** for querying vinyl record availability by artist and record shop location.
+A comprehensive **3-tier TCP-based multi-threaded client-server application** built with Java, featuring a JavaFX desktop client and PostgreSQL backend for querying vinyl record availability across multiple record shops.
 
-Originally developed as part of a university Full Stack Application Development assignment, this project demonstrates:
-- **Multi-threaded TCP networking** with dedicated service threads per client request
-- **Secure JDBC integration** with parameterized queries (SQL injection-safe)
-- **JavaFX GUI** with real-time table updates
-- **Object serialization** using CachedRowSet for network transmission
-- Robust exception handling with proper resource cleanup
+**Developer:** Hashim  
+**Project Duration:** March - April 2024  
+**University Assignment:** Full Stack Application Development  
 
 ---
 
-## 📦 Features
+## 🏗️ Project Overview
 
-- **Multi-threaded Server**: Creates dedicated service threads for each client request
-- **Service Provider Pattern**: Each thread connects to PostgreSQL, executes query, and returns serialized results
-- **JavaFX Client GUI**: Input fields for artist surname and shop city, with TableView display of matching records
-- **Parameterized Queries**: Prevents SQL injection attacks using PreparedStatements
-- **Graceful Error Handling**: Handles empty result sets and network errors properly
-- **PostgreSQL Backend**: Uses `postgresql-42.6.0.jar` JDBC driver
+This application demonstrates enterprise-level software architecture by implementing a complete inventory management system for vinyl record shops. Users can search for records by artist surname and shop location, receiving real-time inventory data including availability counts and pricing information.
 
-### Query Functionality
-Given an artist's surname and a record shop's city, retrieves:
-- Record title
-- Music label  
-- Genre
-- Recommended retail price (RRP)
-- Number of copies available
+### Key Features
 
-Only records with available copies (> 0) are displayed.
+- **Multi-threaded TCP Server** - Handles concurrent client connections efficiently
+- **JavaFX Desktop Client** - Professional GUI with dynamic table updates
+- **PostgreSQL Integration** - Robust database with normalized schema design
+- **Secure JDBC Implementation** - Parameterized queries preventing SQL injection
+- **Real-time Inventory Queries** - Instant search across multiple record shops
+- **Concurrent User Support** - Tested with multiple simultaneous client connections
 
 ---
 
-## 🏗 Architecture
+## �️ Technical Architecture
+
+### System Components
 
 ```
-JavaFX Client ↔ TCP Socket ↔ Multi-threaded Java Server ↔ JDBC ↔ PostgreSQL DB
+┌───────────────────┐    TCP/IP     ┌───────────────────┐    JDBC     ┌───────────────────┐
+│   JavaFX Client   │◄─────────────►│ Multi-threaded    │◄───────────►│  PostgreSQL DB   │
+│                   │   Socket      │   Java Server     │ Connection  │                   │
+│ • Search GUI      │ Communication │ • Thread Pool     │    Pool     │ • Artist Table    │
+│ • Results Table   │               │ • Request Handler │             │ • Record Table    │
+│ • Input Forms     │               │ • JDBC Service    │             │ • Shop Table      │
+│                   │               │                   │             │ • Copy Table      │
+└───────────────────┘               └───────────────────┘             └───────────────────┘
 ```
 
-**Message Protocol**: `"artist_surname;shop_city#"` (semicolon separator, hash terminator)
+### Database Schema
+
+The application utilizes a normalized 4-table PostgreSQL schema:
+
+- **artist** - Artist information (artistID, firstname, lastname)
+- **record** - Album details (recordID, title, label, genre, rrp, artistID)
+- **recordshop** - Shop locations (recordshopID, name, city)
+- **recordcopy** - Inventory tracking (recordcopyID, recordID, recordshopID, onLoan)
 
 ---
 

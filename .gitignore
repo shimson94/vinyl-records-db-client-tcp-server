@@ -1,23 +1,102 @@
-# Compiled Java files
-*.class
+# Java Projects .gitignore
 
-# Package Files
-*.jar
-*.war
-*.ear
+# Compiled class files
+*.class
 
 # Log files
 *.log
 
-# JavaFX SDK (external dependency)
-lib/
-javafx-sdk*/
+# BlueJ files
+*.ctxt
 
-# Database credentials (project-specific security)
-Credentials.java
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Virtual machine crash logs
+hs_err_pid*
+replay_pid*
+
+# IDE specific files
+## IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+## Eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+## NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+## VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Local environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database credentials (security)
+**/Credentials.java
+credentials.properties
+database.properties
+
+# JavaFX SDK (external dependency - keep lib/ but ignore contents)
+lib/javafx-sdk*/
+lib/**/*.jar
+!lib/postgresql-42.6.0.jar
+
+# OS specific files
+## Windows
+Thumbs.db
+Desktop.ini
+
+## macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+## Linux
+*~
 
 # Assignment files (project-specific)
 Assignment_3_FSAD_2024.pdf
+assignment.txt
+
+# Test output
+test-output/
+*.gif
+*.mp4
 assignment.txt
 
 # OS generated files
